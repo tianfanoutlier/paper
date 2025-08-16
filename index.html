@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+
+
+<div class="ruled-paper" role="main">
+  <div class="ruled-paper-header"></div>
+  
+
+  <div class="ruled-paper-body" contenteditable="true">
+  <p id="demo"></p>
+
+<h1> time </h1>
+
+<style>
+table, th, td {
+  border: 1px dotted;
+}
+
+body {
+   /* diameter of the circle */
+   --d: 2px; 
+   
+   background : radial-gradient(
+     circle at 
+        var(--d) 
+        var(--d), 
+        
+     #d3d3d3 calc(var(--d) - 1px), 
+     #0000 var(--d)
+   ) 
+   0 0 / 33px 33px;
+}
+
+textarea {
+  width: 320px;
+  height: 92px;
+  font-size: 1em;
+  padding: 1em;
+  border: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 230px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #f6f6db;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 300px; /* Same as the width of the sidenav */
+  font-size: 17px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidenav">
+<style>
+#calendar {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+#calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1px;
+    background-color: #808080;
+    color: #fff;
+}
+#days {
+    display: flex;
+    justify-content: space-between;
+    padding: 1px;
+    background-color: #808080;
+    color: #fff;
+    text-align: center ;
+    border: 1px solid gray;
+}
+
+
+#calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #808080;
+    transition: opacity 0.5s ease;
+    opacity: 1;
+}
+
+#calendar-body.fade-out {
+    opacity: 0;
+}
+
+#calendar-body div {
+    padding: 3px;
+    background-color: #fff;
+    text-align: center;
+}
+#calendar-body div.today {
+    background-color: #FFFF00;
+    color: #808080;
+}
+
+.change-month {
+    cursor: pointer;
+}
+
+        
+    </style>
+</head>
+<body>
+    
+    <div id="calendar"> <div id="calendar-header"> <span id="month-prev" class="change-month">&lt;</span> <h1 id="month"></h1> <span id="month-next" class="change-month">&gt;</span> </div> 
+    <div id="days"></div>
+    
+    <div id="calendar-body">
+    
+    
+    </div>
+    
+    
+    
+     </div>
+        
+    <script>
+    let date = new Date();
+
+function renderCalendar() {
+    date.setDate(1);
+
+    const monthDays = document.getElementById('calendar-body');
+    const month = document.getElementById('month');
+    const daysElement = document.getElementById('days');
+
+    const lastDay = new Date(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        0
+    ).getDate();
+
+    const prevLastDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        0
+    ).getDate();
+
+    const firstDayIndex = date.getDay();
+
+    const lastDayIndex = new Date(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        0
+    ).getDay();
+
+    const nextDays = 7 - lastDayIndex - 1;
+
+    const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ];
+
+    const days = [
+        'S',
+        'M',
+        'T',
+        'W',
+        'T',
+        'F',
+        'S'
+    ];
+
+    month.innerText = `${months[date.getMonth()]} ${date.getFullYear()}`;
+    daysElement.innerHTML = days.map(day => `<div>${day}</div>`).join('');
+
+    let dates = '';
+
+    for (let x = firstDayIndex; x > 0; x--) {
+        dates += `<div class='prev-date'>${prevLastDay - x + 1}</div>`;
+    }
+
+    for (let i = 1; i <= lastDay; i++) {
+        if (
+            i === new Date().getDate() &&
+            date.getMonth() === new Date().getMonth() &&
+            date.getFullYear() === new Date().getFullYear()
+        ) {
+            dates += `<div class='today'>${i}</div>`;
+        } else {
+            dates += `<div>${i}</div>`;
+        }
+    }
+
+    for (let j = 1; j <= nextDays; j++) {
+        dates += `<div class='next-date'>${j}</div>`;
+    }
+    monthDays.innerHTML = dates;
+}
+
+document.getElementById('month-prev').addEventListener('click', () => {
+    document.getElementById('calendar-body').classList.add('fade-out');
+    setTimeout(() => {
+        date.setMonth(date.getMonth() - 1);
+        renderCalendar();
+        document.getElementById('calendar-body').classList.remove('fade-out');
+    }, 500);
+});
+
+document.getElementById('month-next').addEventListener('click', () => {
+    document.getElementById('calendar-body').classList.add('fade-out');
+    setTimeout(() => {
+        date.setMonth(date.getMonth() + 1);
+        renderCalendar();
+        document.getElementById('calendar-body').classList.remove('fade-out');
+    }, 500);
+});
+
+renderCalendar();
+
+
+     </script>
+     
+
+
+<style>
+table {
+  font-family: times new roman;
+  border-collapse: solid;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #87cefa ;
+  text-align: left;
+  padding: 2px;
+}
+
+<p> Cue </p>
+</style>
+<p> Cue </p>
+</div>
+
+<div class="main"> <h1> notes </h1> 
+notes
+</a> </div> 
+
+
+</body>
+</html>
